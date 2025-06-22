@@ -83,6 +83,13 @@ functions:
                   path: /auth/signup
                   method: post
 
+    testAppRefreshToken:
+        handler: auth/refresh.handler
+        events:
+            - httpApi:
+                  path: /auth/refresh
+                  method: post
+
     testAppCreatePost:
         handler: crud/createPost.handler
         events:
