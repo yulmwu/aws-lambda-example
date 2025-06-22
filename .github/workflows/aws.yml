@@ -25,12 +25,15 @@ jobs:
               with:
                   node-version: 18
 
-            - name: Install dependencies
-              run: npm install
+            - name: Install Serverless Framework v3
+              run: npm install -g serverless@^3
+
+            - name: Install Serverless plugin dependencies
+              run: npm install serverless-plugin-additional-stacks
 
             - name: Deploy with Serverless Framework
               run: npx serverless deploy
               env:
                   COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
                   COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
-                  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+                  ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
