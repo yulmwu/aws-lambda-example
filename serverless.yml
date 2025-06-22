@@ -1,4 +1,4 @@
-service: my-lambda-service
+service: test-app
 
 provider:
     name: aws
@@ -12,7 +12,7 @@ provider:
         COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
         ACCOUNT_ID: ${env:ACCOUNT_ID}
     httpApi:
-        name: my-lambda-http-api
+        name: test-app-api
         cors: true
         authorizers:
             cognitoAuthorizer:
