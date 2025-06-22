@@ -17,7 +17,7 @@ provider:
         authorizers:
             cognitoAuthorizer:
                 type: jwt
-                identitySource: $request.header.Authorization
+                identitySource: '$request.header.Authorization'
                 issuerUrl: https://cognito-idp.${self:provider.region}.amazonaws.com/${self:provider.environment.COGNITO_USER_POOL_ID}
                 audience:
                     - ${self:provider.environment.COGNITO_CLIENT_ID}
