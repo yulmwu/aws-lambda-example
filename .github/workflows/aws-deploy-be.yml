@@ -34,6 +34,11 @@ jobs:
             - name: Install Serverless plugin dependencies
               run: npm install -g serverless-plugin-additional-stacks serverless-esbuild
 
+            - name: Install project dependencies
+              run: |
+                cd backend
+                npm install
+
             - name: Deploy with Serverless Framework
               run: |
                 cd backend
