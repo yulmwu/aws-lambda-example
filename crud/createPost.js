@@ -29,7 +29,7 @@ export const handler = async (event) => {
         const command = new PutCommand({
             TableName: 'Posts',
             Item: {
-                id: await getNextId(),
+                id: String(await getNextId()),
                 title,
                 content,
                 userId: user.sub,

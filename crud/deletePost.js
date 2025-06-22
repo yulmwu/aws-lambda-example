@@ -1,10 +1,10 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, DeleteCommand, GetCommand } from '@aws-sdk/lib-dynamodb'
 
-const db = DynamoDBDocumentClient.from(new DynamoDBClient())
+const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient())
 
 export const handler = async (event) => {
-    const id = parseInt(event.pathParameters.id)
+    const id = event.pathParameters.id
     const user = event.requestContext.authorizer.jwt.claims
 
     try {
@@ -12,7 +12,7 @@ export const handler = async (event) => {
             TableName: 'Posts',
             Key: { id },
         })
-        const result = await db.send(getCommand)
+        const result = await dynamoDB.send(getCommand)
 
         if (!result.Item) {
             return { statusCode: 404, body: JSON.stringify({ message: '게시글이 없습니다' }) }
@@ -25,7 +25,7 @@ export const handler = async (event) => {
             TableName: 'Posts',
             Key: { id },
         })
-        await db.send(deleteCommand)
+        await dynamoDB.send(deleteCommand)
 
         return {
             statusCode: 200,
