@@ -32,7 +32,7 @@ jobs:
               run: npm install -g serverless-plugin-additional-stacks
 
             - name: Deploy with Serverless Framework
-              run: npx serverless deploy
+              run: npx serverless deploy --verbose
               env:
                   COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
                   COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
