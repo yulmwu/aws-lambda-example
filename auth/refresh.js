@@ -3,14 +3,7 @@ import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/cli
 const client = new CognitoIdentityProviderClient({ region: 'ap-northeast-2' })
 
 export const handler = async (event) => {
-    const { refreshToken } = JSON.parse(event.body || '{}')
-
-    if (!refreshToken) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ message: 'Refresh token is required' }),
-        }
-    }
+    const refreshToken = event.headers['RefreshToken']
 
     try {
         const command = new InitiateAuthCommand({
