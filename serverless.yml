@@ -21,6 +21,7 @@ provider:
                 issuerUrl: https://cognito-idp.${self:provider.region}.amazonaws.com/${self:provider.environment.COGNITO_USER_POOL_ID}
                 audience:
                     - ${self:provider.environment.COGNITO_CLIENT_ID}
+    # provider-level role을 지정하지 않음 → 개별 함수에 역할 할당 예정
 
 functions:
     testAppConfirmEmail:
@@ -29,6 +30,7 @@ functions:
             - httpApi:
                   path: /auth/confirmEmail
                   method: post
+        # 인증 함수는 별도 역할 안 줘도 됨 (필요시 지정 가능)
 
     testAppLogin:
         handler: auth/login.handler
@@ -65,15 +67,7 @@ functions:
                   path: /posts
                   method: post
                   authorizer: cognitoAuthorizer
-        role:
-            statements:
-                - Effect: Allow
-                  Action:
-                      - dynamodb:PutItem
-                      - dynamodb:UpdateItem
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Counter
+        role: arn:aws:iam::${self:provider.environment.ACCOUNT_ID}:role/${self:service}-createPostRole-${self:provider.stage}
 
     testAppDeletePost:
         handler: crud/deletePost.handler
@@ -82,13 +76,7 @@ functions:
                   path: /posts/{id}
                   method: delete
                   authorizer: cognitoAuthorizer
-        role:
-            statements:
-                - Effect: Allow
-                  Action:
-                      - dynamodb:DeleteItem
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+        role: arn:aws:iam::${self:provider.environment.ACCOUNT_ID}:role/${self:service}-deletePostRole-${self:provider.stage}
 
     testAppUpdatePost:
         handler: crud/updatePost.handler
@@ -97,13 +85,7 @@ functions:
                   path: /posts/{id}
                   method: put
                   authorizer: cognitoAuthorizer
-        role:
-            statements:
-                - Effect: Allow
-                  Action:
-                      - dynamodb:UpdateItem
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+        role: arn:aws:iam::${self:provider.environment.ACCOUNT_ID}:role/${self:service}-updatePostRole-${self:provider.stage}
 
     testAppGetPost:
         handler: crud/getPost.handler
@@ -111,13 +93,7 @@ functions:
             - httpApi:
                   path: /posts/{id}
                   method: get
-        role:
-            statements:
-                - Effect: Allow
-                  Action:
-                      - dynamodb:GetItem
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+        role: arn:aws:iam::${self:provider.environment.ACCOUNT_ID}:role/${self:service}-getPostRole-${self:provider.stage}
 
     testAppGetPosts:
         handler: crud/getPosts.handler
@@ -125,13 +101,121 @@ functions:
             - httpApi:
                   path: /posts
                   method: get
-        role:
-            statements:
-                - Effect: Allow
-                  Action:
-                      - dynamodb:Scan
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+        role: arn:aws:iam::${self:provider.environment.ACCOUNT_ID}:role/${self:service}-getPostsRole-${self:provider.stage}
+
+resources:
+    Resources:
+        createPostRole:
+            Type: AWS::IAM::Role
+            Properties:
+                RoleName: ${self:service}-createPostRole-${self:provider.stage}
+                AssumeRolePolicyDocument:
+                    Version: '2012-10-17'
+                    Statement:
+                        - Effect: Allow
+                          Principal:
+                              Service: lambda.amazonaws.com
+                          Action: sts:AssumeRole
+                Policies:
+                    - PolicyName: createPostPolicy
+                      PolicyDocument:
+                          Version: '2012-10-17'
+                          Statement:
+                              - Effect: Allow
+                                Action:
+                                    - dynamodb:PutItem
+                                    - dynamodb:UpdateItem
+                                Resource:
+                                    - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+                                    - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Counter
+
+        deletePostRole:
+            Type: AWS::IAM::Role
+            Properties:
+                RoleName: ${self:service}-deletePostRole-${self:provider.stage}
+                AssumeRolePolicyDocument:
+                    Version: '2012-10-17'
+                    Statement:
+                        - Effect: Allow
+                          Principal:
+                              Service: lambda.amazonaws.com
+                          Action: sts:AssumeRole
+                Policies:
+                    - PolicyName: deletePostPolicy
+                      PolicyDocument:
+                          Version: '2012-10-17'
+                          Statement:
+                              - Effect: Allow
+                                Action:
+                                    - dynamodb:DeleteItem
+                                Resource:
+                                    - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+
+        updatePostRole:
+            Type: AWS::IAM::Role
+            Properties:
+                RoleName: ${self:service}-updatePostRole-${self:provider.stage}
+                AssumeRolePolicyDocument:
+                    Version: '2012-10-17'
+                    Statement:
+                        - Effect: Allow
+                          Principal:
+                              Service: lambda.amazonaws.com
+                          Action: sts:AssumeRole
+                Policies:
+                    - PolicyName: updatePostPolicy
+                      PolicyDocument:
+                          Version: '2012-10-17'
+                          Statement:
+                              - Effect: Allow
+                                Action:
+                                    - dynamodb:UpdateItem
+                                Resource:
+                                    - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+
+        getPostRole:
+            Type: AWS::IAM::Role
+            Properties:
+                RoleName: ${self:service}-getPostRole-${self:provider.stage}
+                AssumeRolePolicyDocument:
+                    Version: '2012-10-17'
+                    Statement:
+                        - Effect: Allow
+                          Principal:
+                              Service: lambda.amazonaws.com
+                          Action: sts:AssumeRole
+                Policies:
+                    - PolicyName: getPostPolicy
+                      PolicyDocument:
+                          Version: '2012-10-17'
+                          Statement:
+                              - Effect: Allow
+                                Action:
+                                    - dynamodb:GetItem
+                                Resource:
+                                    - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+
+        getPostsRole:
+            Type: AWS::IAM::Role
+            Properties:
+                RoleName: ${self:service}-getPostsRole-${self:provider.stage}
+                AssumeRolePolicyDocument:
+                    Version: '2012-10-17'
+                    Statement:
+                        - Effect: Allow
+                          Principal:
+                              Service: lambda.amazonaws.com
+                          Action: sts:AssumeRole
+                Policies:
+                    - PolicyName: getPostsPolicy
+                      PolicyDocument:
+                          Version: '2012-10-17'
+                          Statement:
+                              - Effect: Allow
+                                Action:
+                                    - dynamodb:Scan
+                                Resource:
+                                    - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
 
 plugins:
     - serverless-plugin-additional-stacks
