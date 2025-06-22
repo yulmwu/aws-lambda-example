@@ -16,7 +16,7 @@ const getNextId = async () => {
         ReturnValues: 'UPDATED_NEW',
     })
 
-    const result = await db.send(command)
+    const result = await dynamoDB.send(command)
     return result.Attributes.value
 }
 
