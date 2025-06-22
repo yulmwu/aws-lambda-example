@@ -1,0 +1,120 @@
+service: my-lambda-service
+
+frameworkVersion: '3'
+
+provider:
+    name: aws
+    runtime: nodejs18.x
+    region: ap-northeast-2
+    stage: prod
+    memorySize: 128
+    timeout: 10
+    environment:
+        COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+        COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+        ACCOUNT_ID: ${env:ACCOUNT_ID}
+    httpApi:
+        name: my-lambda-http-api
+        cors: true
+        description: Lambda HTTP API with Cognito Authorizer
+    iam:
+        role:
+            statements:
+                - Effect: Allow
+                  Action:
+                      - dynamodb:GetItem
+                      - dynamodb:PutItem
+                      - dynamodb:UpdateItem
+                      - dynamodb:DeleteItem
+                      - dynamodb:Query
+                      - dynamodb:Scan
+                  Resource:
+                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Counter
+
+functions:
+    testAppConfirmEmail:
+        handler: auth/confirmEmail.handler
+        events:
+            - httpApi:
+                  path: /auth/confirmEmail
+                  method: post
+
+    testAppLogin:
+        handler: auth/login.handler
+        events:
+            - httpApi:
+                  path: /auth/login
+                  method: post
+
+    testAppLogout:
+        handler: auth/logout.handler
+        events:
+            - httpApi:
+                  path: /auth/logout
+                  method: post
+
+    testAppResendEmail:
+        handler: auth/resendEmail.handler
+        events:
+            - httpApi:
+                  path: /auth/resendEmail
+                  method: post
+
+    testAppSignup:
+        handler: auth/signup.handler
+        events:
+            - httpApi:
+                  path: /auth/signup
+                  method: post
+
+    testAppCreatePost:
+        handler: crud/createPost.handler
+        events:
+            - httpApi:
+                  path: /posts
+                  method: post
+                  authorizer:
+                      name: cognitoAuthorizer
+
+    testAppDeletePost:
+        handler: crud/deletePost.handler
+        events:
+            - httpApi:
+                  path: /posts/{id}
+                  method: delete
+                  authorizer:
+                      name: cognitoAuthorizer
+
+    testAppUpdatePost:
+        handler: crud/updatePost.handler
+        events:
+            - httpApi:
+                  path: /posts/{id}
+                  method: put
+                  authorizer:
+                      name: cognitoAuthorizer
+
+    testAppGetPost:
+        handler: crud/getPost.handler
+        events:
+            - httpApi:
+                  path: /posts/{id}
+                  method: get
+
+    testAppGetPosts:
+        handler: crud/getPosts.handler
+        events:
+            - httpApi:
+                  path: /posts
+                  method: get
+
+plugins:
+    - serverless-plugin-additional-stacks
+
+custom:
+    httpApi:
+        authorizers:
+            cognitoAuthorizer:
+                userPoolArn: arn:aws:cognito-idp:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:userpool/${self:provider.environment.COGNITO_USER_POOL_ID}
+                identitySource: $request.header.Authorization
