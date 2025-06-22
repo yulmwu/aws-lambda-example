@@ -31,7 +31,7 @@ jobs:
               run: npm install -g serverless@3.40.0
 
             - name: Install Serverless plugin dependencies
-              run: npm install -g serverless-s3-sync serverless-cloudfront-invalidate
+              run: npm install -g serverless-plugin-additional-stacks
 
             - name: Deploy with Serverless Framework
               run: |
