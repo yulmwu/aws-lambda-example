@@ -18,6 +18,9 @@ export const handler = async (event) => {
 
         return {
             statusCode: 200,
+            headers: {
+                'Set-Cookie': `refreshToken=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure`, 
+            },
             body: JSON.stringify({ message: 'Logged out successfully' }),
         }
     } catch (error) {

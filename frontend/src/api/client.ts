@@ -21,10 +21,11 @@ export const setupInterceptors = (getAccessToken: () => string | null, setAccess
             if (err.response?.status === 401 && !original._retry) {
                 original._retry = true
                 try {
-                    const res = await axios.post(`${BASEURL}/refresh`, {}, { withCredentials: true })
+                    const res = await axios.post(`${BASEURL}/auth/refresh`, {}, { withCredentials: true })
                     const newToken = res.data.accessToken
                     setAccessToken(newToken)
                     original.headers.Authorization = `Bearer ${newToken}`
+                    console.log('Access token refreshed:', newToken)
                     return axios(original)
                 } catch {
                     setAccessToken(null)

@@ -21,12 +21,10 @@ export const handler = async (event) => {
         const idToken = result.AuthenticationResult.IdToken
         const refreshToken = result.AuthenticationResult.RefreshToken
 
-        const cookie = `refreshToken=${refreshToken}; HttpOnly; Path=/; Max-Age=${30 * 24 * 60 * 60}; SameSite=Lax; Secure`
-
         return {
             statusCode: 200,
             headers: {
-                'Set-Cookie': cookie,
+                'Set-Cookie': `refreshToken=${refreshToken}; HttpOnly; Path=/; Max-Age=${30 * 24 * 60 * 60}; SameSite=None; Secure`,
             },
             body: JSON.stringify({
                 accessToken,

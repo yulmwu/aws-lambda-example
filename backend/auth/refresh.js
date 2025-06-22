@@ -3,9 +3,9 @@ import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/cli
 const client = new CognitoIdentityProviderClient({ region: 'ap-northeast-2' })
 
 export const handler = async (event) => {
-    const refreshToken = event.cookies?.find(c => c.startsWith('refreshToken='))?.split('=')[1]
-
     try {
+        const refreshToken = event.cookies?.find(c => c.startsWith('refreshToken='))?.split('=')[1]
+
         const command = new InitiateAuthCommand({
             AuthFlow: 'REFRESH_TOKEN_AUTH',
             ClientId: process.env.COGNITO_CLIENT_ID,
