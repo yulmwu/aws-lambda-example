@@ -26,16 +26,18 @@ export const handler = async (event) => {
     const user = event.requestContext.authorizer.jwt.claims
 
     try {
+        const item = {
+            id: String(await getNextId()),
+            title,
+            content,
+            userId: user.sub,
+            userName: user.username,
+            createdAt: new Date().toISOString(),
+        }
+
         const command = new PutCommand({
             TableName: 'Posts',
-            Item: {
-                id: String(await getNextId()),
-                title,
-                content,
-                userId: user.sub,
-                userName: user.username,
-                createdAt: new Date().toISOString(),
-            },
+            Item: item,
         })
         await dynamoDB.send(command)
 
