@@ -23,6 +23,8 @@ const getNextId = async () => {
 export const handler = async (event) => {
     const { title, content } = JSON.parse(event.body)
 
+    const user = event.requestContext.authorizer.jwt.claims
+
     try {
         const command = new PutCommand({
             TableName: 'Posts',

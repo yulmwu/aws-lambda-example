@@ -5,3 +5,4 @@ dist
 env.sh
 .serverless
 .vscode
+*.http
