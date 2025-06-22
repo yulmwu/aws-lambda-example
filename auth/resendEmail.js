@@ -1,22 +1,13 @@
 import { ResendConfirmationCodeCommand } from '@aws-sdk/client-cognito-identity-provider'
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
 
 const cognitoClient = new CognitoIdentityProviderClient()
-const ssm = new SSMClient()
-
-const getCognitoClientId = async () =>
-    await ssm.send(
-        new GetParameterCommand({
-            Name: '/test/post/cognito_client_id',
-        })
-    ).Parameter?.Value
 
 export const handler = async (event) => {
     const { username } = JSON.parse(event.body)
 
     try {
         const command = new ResendConfirmationCodeCommand({
-            ClientId: await getCognitoClientId(),
+            ClientId: process.env.COGNITO_CLIENT_ID,
             Username: username,
         })
 

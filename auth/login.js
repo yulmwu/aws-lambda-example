@@ -1,15 +1,6 @@
 import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
 
 const cognitoClient = new CognitoIdentityProviderClient()
-const ssm = new SSMClient()
-
-const getCognitoClientId = async () =>
-    await ssm.send(
-        new GetParameterCommand({
-            Name: '/test/post/cognito_client_id',
-        })
-    ).Parameter?.Value
 
 export const handler = async (event) => {
     const { username, password } = JSON.parse(event.body)
@@ -17,7 +8,7 @@ export const handler = async (event) => {
     try {
         const command = new InitiateAuthCommand({
             AuthFlow: 'USER_PASSWORD_AUTH',
-            ClientId: await getCognitoClientId(),
+            ClientId: process.env.COGNITO_CLIENT_ID,
             AuthParameters: {
                 USERNAME: username,
                 PASSWORD: password,
