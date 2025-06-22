@@ -1,4 +1,4 @@
-service: test-app
+service: acinside-sl-backend
 
 provider:
     name: aws
@@ -12,7 +12,7 @@ provider:
         COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
         AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     httpApi:
-        name: test-app-api
+        name: acinside-sl-api
         cors: true
         authorizers:
             cognitoAuthorizer:
@@ -48,49 +48,49 @@ provider:
                       - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
 
 functions:
-    testAppConfirmEmail:
+    acinsideSL_ConfirmEmail:
         handler: auth/confirmEmail.handler
         events:
             - httpApi:
                   path: /auth/confirmEmail
                   method: post
 
-    testAppLogin:
+    acinsideSL_Login:
         handler: auth/login.handler
         events:
             - httpApi:
                   path: /auth/login
                   method: post
 
-    testAppLogout:
+    acinsideSL_Logout:
         handler: auth/logout.handler
         events:
             - httpApi:
                   path: /auth/logout
                   method: post
 
-    testAppResendEmail:
+    acinsideSL_ResendEmail:
         handler: auth/resendEmail.handler
         events:
             - httpApi:
                   path: /auth/resendEmail
                   method: post
 
-    testAppSignup:
+    acinsideSL_Signup:
         handler: auth/signup.handler
         events:
             - httpApi:
                   path: /auth/signup
                   method: post
 
-    testAppRefreshToken:
+    acinsideSL_RefreshToken:
         handler: auth/refresh.handler
         events:
             - httpApi:
                   path: /auth/refresh
                   method: post
 
-    testAppCreatePost:
+    acinsideSL_CreatePost:
         handler: crud/createPost.handler
         events:
             - httpApi:
@@ -98,7 +98,7 @@ functions:
                   method: post
                   authorizer: cognitoAuthorizer
 
-    testAppDeletePost:
+    acinsideSL_DeletePost:
         handler: crud/deletePost.handler
         events:
             - httpApi:
@@ -106,7 +106,7 @@ functions:
                   method: delete
                   authorizer: cognitoAuthorizer
 
-    testAppUpdatePost:
+    acinsideSL_UpdatePost:
         handler: crud/updatePost.handler
         events:
             - httpApi:
@@ -114,14 +114,14 @@ functions:
                   method: put
                   authorizer: cognitoAuthorizer
 
-    testAppGetPost:
+    acinsideSL_GetPost:
         handler: crud/getPost.handler
         events:
             - httpApi:
                   path: /posts/{id}
                   method: get
 
-    testAppGetPosts:
+    acinsideSL_GetPosts:
         handler: crud/getPosts.handler
         events:
             - httpApi:

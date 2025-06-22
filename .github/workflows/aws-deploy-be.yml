@@ -4,6 +4,8 @@ on:
     push:
         branches:
             - main
+        paths:
+            - 'backend/**'
 
 jobs:
     deploy:
@@ -29,10 +31,12 @@ jobs:
               run: npm install -g serverless@3.40.0
 
             - name: Install Serverless plugin dependencies
-              run: npm install -g serverless-plugin-additional-stacks
+              run: npm install -g serverless-s3-sync serverless-cloudfront-invalidate
 
             - name: Deploy with Serverless Framework
-              run: npx serverless deploy --verbose
+              run: |
+                cd backend
+                npx serverless deploy --verbose
               env:
                   COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
                   COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}

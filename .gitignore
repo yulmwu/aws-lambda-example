@@ -1,8 +1,8 @@
-node_modules
-.DS_Store
-.env
-dist
-env.sh
-.serverless
-.vscode
-*.http
+**/node_modules
+**/.DS_Store
+**/.env
+**/dist
+**/env.sh
+**/.serverless
+**/.vscode
+**/*.http
