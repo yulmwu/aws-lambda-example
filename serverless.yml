@@ -10,7 +10,7 @@ provider:
     environment:
         COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
         COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
-        ACCOUNT_ID: ${env:ACCOUNT_ID}
+        AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     httpApi:
         name: test-app-api
         cors: true
@@ -29,23 +29,23 @@ provider:
                       - dynamodb:PutItem
                       - dynamodb:UpdateItem
                   Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Counter
+                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
+                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Counter
                 - Effect: Allow
                   Action:
                       - dynamodb:DeleteItem
                   Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
                 - Effect: Allow
                   Action:
                       - dynamodb:GetItem
                   Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
                 - Effect: Allow
                   Action:
                       - dynamodb:Scan
                   Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:table/Posts
+                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
 
 functions:
     testAppConfirmEmail:

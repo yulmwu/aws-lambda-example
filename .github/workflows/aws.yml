@@ -36,4 +36,4 @@ jobs:
               env:
                   COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
                   COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
-                  ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+                  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
