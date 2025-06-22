@@ -1,4 +1,5 @@
 service: my-lambda-service
+
 provider:
     name: aws
     runtime: nodejs18.x
@@ -13,7 +14,13 @@ provider:
     httpApi:
         name: my-lambda-http-api
         cors: true
-        description: Lambda HTTP API with Cognito Authorizer
+        authorizers:
+            cognitoAuthorizer:
+                type: jwt
+                identitySource: $request.header.Authorization
+                issuerUrl: https://cognito-idp.${self:provider.region}.amazonaws.com/${self:provider.environment.COGNITO_USER_POOL_ID}
+                audience:
+                    - ${self:provider.environment.COGNITO_CLIENT_ID}
     iam:
         role:
             statements:
@@ -71,8 +78,7 @@ functions:
             - httpApi:
                   path: /posts
                   method: post
-                  authorizer:
-                      name: cognitoAuthorizer
+                  authorizer: cognitoAuthorizer
 
     testAppDeletePost:
         handler: crud/deletePost.handler
@@ -80,8 +86,7 @@ functions:
             - httpApi:
                   path: /posts/{id}
                   method: delete
-                  authorizer:
-                      name: cognitoAuthorizer
+                  authorizer: cognitoAuthorizer
 
     testAppUpdatePost:
         handler: crud/updatePost.handler
@@ -89,8 +94,7 @@ functions:
             - httpApi:
                   path: /posts/{id}
                   method: put
-                  authorizer:
-                      name: cognitoAuthorizer
+                  authorizer: cognitoAuthorizer
 
     testAppGetPost:
         handler: crud/getPost.handler
@@ -108,10 +112,3 @@ functions:
 
 plugins:
     - serverless-plugin-additional-stacks
-
-custom:
-    httpApi:
-        authorizers:
-            cognitoAuthorizer:
-                userPoolArn: arn:aws:cognito-idp:${self:provider.region}:${self:provider.environment.ACCOUNT_ID}:userpool/${self:provider.environment.COGNITO_USER_POOL_ID}
-                identitySource: $request.header.Authorization
