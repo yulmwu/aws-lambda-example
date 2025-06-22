@@ -29,7 +29,7 @@ jobs:
               run: npm install -g serverless@^3
 
             - name: Install Serverless plugin dependencies
-              run: npm install serverless-plugin-additional-stacks
+              run: npm install -g serverless-plugin-additional-stacks
 
             - name: Deploy with Serverless Framework
               run: npx serverless deploy
