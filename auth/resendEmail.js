@@ -1,4 +1,4 @@
-import { ResendConfirmationCodeCommand } from '@aws-sdk/client-cognito-identity-provider'
+import { CognitoIdentityProviderClient, ResendConfirmationCodeCommand } from '@aws-sdk/client-cognito-identity-provider'
 
 const cognitoClient = new CognitoIdentityProviderClient()
 
