@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [accessToken, setAccessToken] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
 
-    // ✅ 새로고침 시 /refresh 요청
     useEffect(() => {
         const tryRefresh = async () => {
             try {

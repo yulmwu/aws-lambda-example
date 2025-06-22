@@ -129,4 +129,19 @@ functions:
                   method: get
 
 plugins:
-    - serverless-plugin-additional-stacks
+  - serverless-esbuild
+  - serverless-plugin-additional-stacks
+
+custom:
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: false
+    target: 'node18'
+    platform: 'node'
+    concurrency: 10
+    treeShaking: true
+    packager: npm
+
+package:
+    individually: true
