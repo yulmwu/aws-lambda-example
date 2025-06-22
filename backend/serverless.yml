@@ -131,6 +131,7 @@ functions:
 plugins:
   - serverless-esbuild
   - serverless-plugin-additional-stacks
+  - serverless-prune-plugin
 
 custom:
   esbuild:
@@ -142,6 +143,9 @@ custom:
     concurrency: 10
     treeShaking: true
     packager: npm
+  prune:
+    automatic: true
+    number: 3
 
 package:
     individually: true
