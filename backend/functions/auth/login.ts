@@ -13,7 +13,7 @@ const cognitoClient = new CognitoIdentityProviderClient({})
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
-        const { username, password } = event.queryStringParameters ?? {}
+        const { username, password } = JSON.parse(event.body ?? '{}')
         if (!username || !password) return error(badRequest(required('username', 'password')), 'ERR_LOGIN_BAD_REQUEST')
 
         const command = new InitiateAuthCommand({

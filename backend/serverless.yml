@@ -150,6 +150,7 @@ custom:
         concurrency: 10
         treeShaking: true
         packager: npm
+        format: 'cjs'
     prune:
         automatic: true
         number: 3

@@ -6,3 +6,4 @@
 **/.serverless
 **/.vscode
 **/*.http
+**/*.tests.*
