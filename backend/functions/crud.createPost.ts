@@ -1,6 +1,11 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
-import { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda'
+import {
+    APIGatewayProxyEventV2,
+    APIGatewayProxyEventV2WithJWTAuthorizer,
+    APIGatewayProxyResultV2,
+} from 'aws-lambda'
+import { badRequest, error, internalServerError, required, unauthorized } from '../utils/httpError'
 
 const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient({}))
 
@@ -21,17 +26,15 @@ const getNextId = async (): Promise<number> => {
     return result.Attributes?.value
 }
 
-export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
+export const handler = async (
+    event: APIGatewayProxyEventV2WithJWTAuthorizer
+): Promise<APIGatewayProxyResultV2> => {
     try {
-        const { title, content }: { title: string; content: string } = JSON.parse(event.body || '{}')
+        const { title, content } = JSON.parse(event.body ?? '{}')
+        if (!title || !content) return error(badRequest(required('title', 'content')))
 
         const user = event.requestContext.authorizer?.jwt?.claims
-        if (!user || !user.sub || !user.username) {
-            return {
-                statusCode: 401,
-                body: JSON.stringify({ error: 'Unauthorized' }),
-            }
-        }
+        if (!user || !user.sub || !user.username) return error(unauthorized('Unauthorized'))
 
         const item = {
             id: String(await getNextId()),
@@ -54,10 +57,6 @@ export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): P
             body: JSON.stringify(item),
         }
     } catch (err) {
-        const error = err as Error
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message }),
-        }
+        return error(internalServerError((err as Error).message))
     }
 }

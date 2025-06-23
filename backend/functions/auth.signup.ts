@@ -1,11 +1,17 @@
-import { CognitoIdentityProviderClient, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider'
+import {
+    CognitoIdentityProviderClient,
+    SignUpCommand,
+} from '@aws-sdk/client-cognito-identity-provider'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
+import { badRequest, error, internalServerError, required } from '../utils/httpError'
 
 const cognitoClient = new CognitoIdentityProviderClient({})
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
-        const { username, password, email }: { username: string; password: string; email: string } = JSON.parse(event.body || '{}')
+        const { username, password, email } = JSON.parse(event.body ?? '{}')
+        if (!username || !password || !email)
+            return error(badRequest(required('username', 'password', 'email')))
 
         const command = new SignUpCommand({
             ClientId: process.env.COGNITO_CLIENT_ID!,
@@ -21,10 +27,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
             body: JSON.stringify({ message: '회원가입 성공' }),
         }
     } catch (err) {
-        const error = err as Error
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: error.message }),
-        }
+        return error(internalServerError((err as Error).message))
     }
 }
