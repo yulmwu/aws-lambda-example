@@ -1,6 +1,13 @@
-import { CognitoIdentityProviderClient, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider'
+import {
+    CognitoIdentityProviderClient,
+    SignUpCommand,
+    UsernameExistsException,
+    InvalidPasswordException,
+    InvalidParameterException,
+    LimitExceededException,
+} from '@aws-sdk/client-cognito-identity-provider'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
-import { badRequest, error, internalServerError, required } from '../utils/httpError'
+import { badRequest, error, internalServerError, required } from '../../utils/httpError'
 
 const cognitoClient = new CognitoIdentityProviderClient({})
 
@@ -24,6 +31,16 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
             body: JSON.stringify({ message: 'Signup successful, please check your email for confirmation.' }),
         }
     } catch (err) {
+        if (err instanceof UsernameExistsException) {
+            return error(badRequest('Username already exists'), 'ERR_SIGNUP_USERNAME_EXISTS')
+        } else if (err instanceof InvalidPasswordException) {
+            return error(badRequest('Password does not meet complexity requirements'), 'ERR_SIGNUP_INVALID_PASSWORD')
+        } else if (err instanceof InvalidParameterException) {
+            return error(badRequest('Invalid signup parameters'), 'ERR_SIGNUP_INVALID_PARAMETER')
+        } else if (err instanceof LimitExceededException) {
+            return error(badRequest('Signup attempt limit exceeded. Try again later.'), 'ERR_SIGNUP_LIMIT_EXCEEDED')
+        }
+
         return error(internalServerError((err as Error).message), 'ERR_SIGNUP_INTERNAL_SERVER_ERROR')
     }
 }

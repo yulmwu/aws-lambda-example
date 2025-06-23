@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
 import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda'
-import { badRequest, error, internalServerError, required, unAuthorized } from '../utils/httpError'
+import { badRequest, error, internalServerError, required, unAuthorized } from '../../utils/httpError'
 
 const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient({}))
 

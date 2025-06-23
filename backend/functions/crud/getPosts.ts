@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { APIGatewayProxyResultV2 } from 'aws-lambda'
-import { error, internalServerError } from '../utils/httpError'
+import { error, internalServerError } from '../../utils/httpError'
 
 const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient({}))
 

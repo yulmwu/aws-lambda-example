@@ -1,6 +1,6 @@
 import { CognitoIdentityProviderClient, GlobalSignOutCommand } from '@aws-sdk/client-cognito-identity-provider'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
-import { error, internalServerError, unAuthorized } from '../utils/httpError'
+import { error, internalServerError, unAuthorized } from '../../utils/httpError'
 
 const cognitoClient = new CognitoIdentityProviderClient({})
 

@@ -7,7 +7,7 @@ import {
     UserNotFoundException,
 } from '@aws-sdk/client-cognito-identity-provider'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
-import { badRequest, error, internalServerError, required } from '../utils/httpError'
+import { badRequest, error, internalServerError, required } from '../../utils/httpError'
 
 const cognitoClient = new CognitoIdentityProviderClient({})
 

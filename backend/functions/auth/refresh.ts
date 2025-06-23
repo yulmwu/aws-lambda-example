@@ -1,6 +1,12 @@
-import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
+import {
+    CognitoIdentityProviderClient,
+    InitiateAuthCommand,
+    NotAuthorizedException,
+    InvalidParameterException,
+    UserNotFoundException,
+} from '@aws-sdk/client-cognito-identity-provider'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
-import { error, internalServerError, unAuthorized } from '../utils/httpError'
+import { error, internalServerError, unAuthorized } from '../../utils/httpError'
 
 const client = new CognitoIdentityProviderClient({ region: 'ap-northeast-2' })
 
@@ -30,6 +36,14 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
             }),
         }
     } catch (err) {
+        if (err instanceof NotAuthorizedException) {
+            return error(unAuthorized(), 'ERR_REFRESH_INVALID_TOKEN')
+        } else if (err instanceof InvalidParameterException) {
+            return error(unAuthorized(), 'ERR_REFRESH_INVALID_PARAMETER')
+        } else if (err instanceof UserNotFoundException) {
+            return error(unAuthorized(), 'ERR_REFRESH_USER_NOT_FOUND')
+        }
+
         return error(internalServerError((err as Error).message), 'ERR_REFRESH_INTERNAL_SERVER_ERROR')
     }
 }
