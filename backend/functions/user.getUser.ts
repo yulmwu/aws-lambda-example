@@ -1,12 +1,10 @@
 import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda'
-import { error, internalServerError, unauthorized } from '../utils/httpError'
+import { error, internalServerError, unAuthorized } from '../utils/httpError'
 
-export const handler = async (
-    event: APIGatewayProxyEventV2WithJWTAuthorizer
-): Promise<APIGatewayProxyResultV2> => {
+export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
     try {
         const claims = event.requestContext.authorizer?.jwt?.claims
-        if (!claims) return error(unauthorized('Unauthorized'))
+        if (!claims) return error(unAuthorized(), 'ERR_GET_USER_UNAUTHORIZED')
 
         const userInfo = {
             // username: claims['cognito:username'],
@@ -21,6 +19,6 @@ export const handler = async (
             body: JSON.stringify(userInfo),
         }
     } catch (err) {
-        return error(internalServerError((err as Error).message))
+        return error(internalServerError((err as Error).message), 'ERR_GET_USER_INTERNAL_SERVER_ERROR')
     }
 }

@@ -1,9 +1,6 @@
-import {
-    CognitoIdentityProviderClient,
-    InitiateAuthCommand,
-} from '@aws-sdk/client-cognito-identity-provider'
+import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
-import { error, internalServerError, unauthorized } from '../utils/httpError'
+import { error, internalServerError, unAuthorized } from '../utils/httpError'
 
 const client = new CognitoIdentityProviderClient({ region: 'ap-northeast-2' })
 
@@ -12,7 +9,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
         const cookies = event.cookies ?? []
         const refreshToken = cookies.find((c) => c.startsWith('refreshToken='))?.split('=')[1]
 
-        if (!refreshToken) return error(unauthorized('Unauthorized: No refresh token found'))
+        if (!refreshToken) return error(unAuthorized(), 'ERR_REFRESH_UNAUTHORIZED')
 
         const command = new InitiateAuthCommand({
             AuthFlow: 'REFRESH_TOKEN_AUTH',
@@ -33,6 +30,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
             }),
         }
     } catch (err) {
-        return error(internalServerError((err as Error).message))
+        return error(internalServerError((err as Error).message), 'ERR_REFRESH_INTERNAL_SERVER_ERROR')
     }
 }

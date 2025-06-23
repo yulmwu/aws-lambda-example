@@ -1,11 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
-import {
-    APIGatewayProxyEventV2,
-    APIGatewayProxyEventV2WithJWTAuthorizer,
-    APIGatewayProxyResultV2,
-} from 'aws-lambda'
-import { badRequest, error, internalServerError, required, unauthorized } from '../utils/httpError'
+import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda'
+import { badRequest, error, internalServerError, required, unAuthorized } from '../utils/httpError'
 
 const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient({}))
 
@@ -26,15 +22,13 @@ const getNextId = async (): Promise<number> => {
     return result.Attributes?.value
 }
 
-export const handler = async (
-    event: APIGatewayProxyEventV2WithJWTAuthorizer
-): Promise<APIGatewayProxyResultV2> => {
+export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
     try {
         const { title, content } = JSON.parse(event.body ?? '{}')
-        if (!title || !content) return error(badRequest(required('title', 'content')))
+        if (!title || !content) return error(badRequest(required('title', 'content')), 'ERR_CREATE_POST_BAD_REQUEST')
 
         const user = event.requestContext.authorizer?.jwt?.claims
-        if (!user || !user.sub || !user.username) return error(unauthorized('Unauthorized'))
+        if (!user || !user.sub || !user.username) return error(unAuthorized(), 'ERR_CREATE_POST_UNAUTHORIZED')
 
         const item = {
             id: String(await getNextId()),
@@ -57,6 +51,6 @@ export const handler = async (
             body: JSON.stringify(item),
         }
     } catch (err) {
-        return error(internalServerError((err as Error).message))
+        return error(internalServerError((err as Error).message), 'ERR_CREATE_POST_INTERNAL_SERVER_ERROR')
     }
 }

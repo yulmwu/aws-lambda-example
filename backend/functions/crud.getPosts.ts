@@ -15,6 +15,6 @@ export const handler = async (): Promise<APIGatewayProxyResultV2> => {
             body: JSON.stringify(result.Items),
         }
     } catch (err) {
-        return error(internalServerError((err as Error).message))
+        return error(internalServerError((err as Error).message), 'ERR_GET_POSTS_INTERNAL_SERVER_ERROR')
     }
 }

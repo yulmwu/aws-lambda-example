@@ -8,34 +8,30 @@ export const badRequest = (message: string): HTTPError => ({
     message,
 })
 
-export const unauthorized = (message: string): HTTPError => ({
+export const unAuthorized = (message?: string): HTTPError => ({
     statusCode: 401,
-    message,
+    // message: message ?? 'Unauthorized',
+    message: `Unauthorized ${message ? `: ${message}` : ''}`,
 })
 
-export const forbidden = (message: string): HTTPError => ({
+export const forbidden = (message?: string): HTTPError => ({
     statusCode: 403,
-    message,
+    message: `Forbidden ${message ? `: ${message}` : ''}`,
 })
 
-export const notFound = (message: string): HTTPError => ({
+export const notFound = (message?: string): HTTPError => ({
     statusCode: 404,
-    message,
+    message: `Not Found ${message ? `: ${message}` : ''}`,
 })
 
-export const internalServerError = (message: string): HTTPError => ({
+export const internalServerError = (message?: string): HTTPError => ({
     statusCode: 500,
-    message,
+    message: `Internal Server Error ${message ? `: ${message}` : ''}`,
 })
 
-export const error = (err: HTTPError) => ({
+export const error = (err: HTTPError, code: string) => ({
     statusCode: err.statusCode,
-    body: JSON.stringify({ error: err.message }),
+    body: JSON.stringify({ error: err.message, code }),
 })
 
-export const required = (...fields: string[]) => {
-    if (fields.length === 1) return `${fields[0]} is required`
-
-    const last = fields.pop()
-    return `${fields.join(', ')} and ${last!} are required`
-}
+export const required = (...fields: string[]) => `Missing required fields: ${fields.join(', ')}`
