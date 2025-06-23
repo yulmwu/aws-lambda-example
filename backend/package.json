@@ -15,11 +15,18 @@
     "type": "module",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "tsc",
+        "check": "tsc --noEmit",
+        "deploy": "serverless deploy",
+        "remove": "serverless remove"
     },
     "dependencies": {
         "@aws-sdk/client-cognito-identity-provider": "^3.830.0",
         "@aws-sdk/client-dynamodb": "^3.830.0",
         "@aws-sdk/lib-dynamodb": "^3.830.0"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.150",
+        "@types/node": "^24.0.3"
     }
 }

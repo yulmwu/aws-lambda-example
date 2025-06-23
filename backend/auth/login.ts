@@ -1,14 +1,15 @@
 import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 
-const cognitoClient = new CognitoIdentityProviderClient()
+const cognitoClient = new CognitoIdentityProviderClient({})
 
-export const handler = async (event) => {
-    const { username, password } = JSON.parse(event.body)
-
+export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
+        const { username, password }: { username: string; password: string } = JSON.parse(event.body || '{}')
+
         const command = new InitiateAuthCommand({
             AuthFlow: 'USER_PASSWORD_AUTH',
-            ClientId: process.env.COGNITO_CLIENT_ID,
+            ClientId: process.env.COGNITO_CLIENT_ID!,
             AuthParameters: {
                 USERNAME: username,
                 PASSWORD: password,
@@ -17,9 +18,9 @@ export const handler = async (event) => {
 
         const result = await cognitoClient.send(command)
 
-        const accessToken = result.AuthenticationResult.AccessToken
-        const idToken = result.AuthenticationResult.IdToken
-        const refreshToken = result.AuthenticationResult.RefreshToken
+        const accessToken = result.AuthenticationResult?.AccessToken
+        const idToken = result.AuthenticationResult?.IdToken
+        const refreshToken = result.AuthenticationResult?.RefreshToken
 
         return {
             statusCode: 200,
@@ -32,9 +33,10 @@ export const handler = async (event) => {
             }),
         }
     } catch (err) {
+        const error = err as Error
         return {
             statusCode: 400,
-            body: JSON.stringify({ error: err.message }),
+            body: JSON.stringify({ error: error.message }),
         }
     }
 }

@@ -1,9 +1,10 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
+import { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda'
 
-const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient())
+const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient({}))
 
-const getNextId = async () => {
+const getNextId = async (): Promise<number> => {
     const command = new UpdateCommand({
         TableName: 'Counter',
         Key: { name: 'post' },
@@ -17,15 +18,21 @@ const getNextId = async () => {
     })
 
     const result = await dynamoDB.send(command)
-    return result.Attributes.value
+    return result.Attributes?.value
 }
 
-export const handler = async (event) => {
-    const { title, content } = JSON.parse(event.body)
-
-    const user = event.requestContext.authorizer.jwt.claims
-
+export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
     try {
+        const { title, content }: { title: string; content: string } = JSON.parse(event.body || '{}')
+
+        const user = event.requestContext.authorizer?.jwt?.claims
+        if (!user || !user.sub || !user.username) {
+            return {
+                statusCode: 401,
+                body: JSON.stringify({ error: 'Unauthorized' }),
+            }
+        }
+
         const item = {
             id: String(await getNextId()),
             title,
@@ -39,6 +46,7 @@ export const handler = async (event) => {
             TableName: 'Posts',
             Item: item,
         })
+
         await dynamoDB.send(command)
 
         return {
@@ -46,9 +54,10 @@ export const handler = async (event) => {
             body: JSON.stringify(item),
         }
     } catch (err) {
+        const error = err as Error
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: err.message }),
+            body: JSON.stringify({ error: error.message }),
         }
     }
 }

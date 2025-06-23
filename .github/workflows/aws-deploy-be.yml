@@ -34,10 +34,20 @@ jobs:
             - name: Install Serverless plugin dependencies
               run: npm install -g serverless-plugin-additional-stacks serverless-esbuild serverless-prune-plugin
 
+            - name: Install TypeScript
+              run: |
+                cd backend
+                npm install typescript ts-node @types/node --save-dev
+
             - name: Install project dependencies
               run: |
                 cd backend
                 npm install
+
+            - name: Build TypeScript files
+              run: |
+                cd backend
+                tsc
 
             - name: Deploy with Serverless Framework
               run: |

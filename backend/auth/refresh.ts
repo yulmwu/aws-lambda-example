@@ -1,14 +1,23 @@
 import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 
 const client = new CognitoIdentityProviderClient({ region: 'ap-northeast-2' })
 
-export const handler = async (event) => {
+export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
-        const refreshToken = event.cookies?.find(c => c.startsWith('refreshToken='))?.split('=')[1]
+        const cookies = event.cookies || []
+        const refreshToken = cookies.find((c) => c.startsWith('refreshToken='))?.split('=')[1]
+
+        if (!refreshToken) {
+            return {
+                statusCode: 401,
+                body: JSON.stringify({ message: 'No refresh token found' }),
+            }
+        }
 
         const command = new InitiateAuthCommand({
             AuthFlow: 'REFRESH_TOKEN_AUTH',
-            ClientId: process.env.COGNITO_CLIENT_ID,
+            ClientId: process.env.COGNITO_CLIENT_ID!,
             AuthParameters: {
                 REFRESH_TOKEN: refreshToken,
             },
@@ -25,10 +34,15 @@ export const handler = async (event) => {
             }),
         }
     } catch (error) {
-        console.error('Token refresh failed:', error)
+        const err = error as Error
+        console.error('Token refresh failed:', err)
+
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Token refresh failed', error: error.message }),
+            body: JSON.stringify({
+                message: 'Token refresh failed',
+                error: err.message,
+            }),
         }
     }
 }

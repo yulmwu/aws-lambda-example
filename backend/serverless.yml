@@ -49,49 +49,49 @@ provider:
 
 functions:
     acinsideSL_ConfirmEmail:
-        handler: auth/confirmEmail.handler
+        handler: dist/auth/confirmEmail.handler
         events:
             - httpApi:
                   path: /auth/confirmEmail
                   method: post
 
     acinsideSL_Login:
-        handler: auth/login.handler
+        handler: dist/auth/login.handler
         events:
             - httpApi:
                   path: /auth/login
                   method: post
 
     acinsideSL_Logout:
-        handler: auth/logout.handler
+        handler: dist/auth/logout.handler
         events:
             - httpApi:
                   path: /auth/logout
                   method: post
 
     acinsideSL_ResendEmail:
-        handler: auth/resendEmail.handler
+        handler: dist/auth/resendEmail.handler
         events:
             - httpApi:
                   path: /auth/resendEmail
                   method: post
 
     acinsideSL_Signup:
-        handler: auth/signup.handler
+        handler: dist/auth/signup.handler
         events:
             - httpApi:
                   path: /auth/signup
                   method: post
 
     acinsideSL_RefreshToken:
-        handler: auth/refresh.handler
+        handler: dist/auth/refresh.handler
         events:
             - httpApi:
                   path: /auth/refresh
                   method: post
 
     acinsideSL_CreatePost:
-        handler: crud/createPost.handler
+        handler: dist/crud/createPost.handler
         events:
             - httpApi:
                   path: /posts
@@ -99,7 +99,7 @@ functions:
                   authorizer: cognitoAuthorizer
 
     acinsideSL_DeletePost:
-        handler: crud/deletePost.handler
+        handler: dist/crud/deletePost.handler
         events:
             - httpApi:
                   path: /posts/{id}
@@ -107,7 +107,7 @@ functions:
                   authorizer: cognitoAuthorizer
 
     acinsideSL_UpdatePost:
-        handler: crud/updatePost.handler
+        handler: dist/crud/updatePost.handler
         events:
             - httpApi:
                   path: /posts/{id}
@@ -115,14 +115,14 @@ functions:
                   authorizer: cognitoAuthorizer
 
     acinsideSL_GetPost:
-        handler: crud/getPost.handler
+        handler: dist/crud/getPost.handler
         events:
             - httpApi:
                   path: /posts/{id}
                   method: get
 
     acinsideSL_GetPosts:
-        handler: crud/getPosts.handler
+        handler: dist/crud/getPosts.handler
         events:
             - httpApi:
                   path: /posts
