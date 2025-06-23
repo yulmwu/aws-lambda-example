@@ -9,14 +9,14 @@ export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): P
         const authHeader = event.headers.authorization || event.headers.Authorization
         if (!authHeader) return error(unAuthorized(), 'ERR_GET_USER_NO_AUTH_HEADER')
 
-        const token = authHeader.split(' ')[1] // 'Bearer xxx'
+        const token = authHeader.split(' ')[1]
         if (!token) return error(unAuthorized(), 'ERR_GET_USER_NO_TOKEN')
 
         const getUserCommand = new GetUserCommand({ AccessToken: token })
         const response = await cognitoClient.send(getUserCommand)
 
         const userAttributes = Object.fromEntries(
-            (response.UserAttributes || []).map((attr) => [attr.Name, attr.Value])
+            (response.UserAttributes ?? []).map((attr) => [attr.Name, attr.Value])
         )
 
         return {

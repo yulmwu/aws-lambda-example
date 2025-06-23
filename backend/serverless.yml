@@ -91,7 +91,7 @@ functions:
                   method: post
 
     acinsideSL_CreatePost:
-        handler: dist/functions/crud/createPost.handler
+        handler: dist/functions/post/createPost.handler
         events:
             - httpApi:
                   path: /posts
@@ -99,7 +99,7 @@ functions:
                   authorizer: cognitoAuthorizer
 
     acinsideSL_DeletePost:
-        handler: dist/functions/crud/deletePost.handler
+        handler: dist/functions/post/deletePost.handler
         events:
             - httpApi:
                   path: /posts/{id}
@@ -107,7 +107,7 @@ functions:
                   authorizer: cognitoAuthorizer
 
     acinsideSL_UpdatePost:
-        handler: dist/functions/crud/updatePost.handler
+        handler: dist/functions/post/updatePost.handler
         events:
             - httpApi:
                   path: /posts/{id}
@@ -115,24 +115,24 @@ functions:
                   authorizer: cognitoAuthorizer
 
     acinsideSL_GetPost:
-        handler: dist/functions/crud/getPost.handler
+        handler: dist/functions/post/getPost.handler
         events:
             - httpApi:
                   path: /posts/{id}
                   method: get
 
     acinsideSL_GetPosts:
-        handler: dist/functions/crud/getPosts.handler
+        handler: dist/functions/post/getPosts.handler
         events:
             - httpApi:
                   path: /posts
                   method: get
 
-    acinsideSL_GetUser:
-        handler: dist/functions/user/getUserInfo.handler
+    acinsideSL_MyInfo:
+        handler: dist/functions/user/myInfo.handler
         events:
             - httpApi:
-                  path: /getuserinfo
+                  path: /myinfo
                   method: get
                   authorizer: cognitoAuthorizer
 
