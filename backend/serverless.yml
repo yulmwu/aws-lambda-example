@@ -134,6 +134,7 @@ functions:
             - httpApi:
                   path: /getuserinfo
                   method: get
+                  authorizer: cognitoAuthorizer
 
 plugins:
     - serverless-esbuild
@@ -153,7 +154,7 @@ custom:
         format: 'cjs'
     prune:
         automatic: true
-        number: 3
+        number: 2
 
 package:
     individually: true
