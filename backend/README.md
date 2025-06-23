@@ -210,6 +210,20 @@ JWT 리프레시 토큰을 사용하여 새로운 엑세스 토큰과 아이디 
 
 # User CRUD API
 
-## `GET /users`
+## `GET /myinfo`
 
-## `GET /users/{userName}`
+현재 사용자 정보를 조회하는 엔드포인트입니다. 요청 헤더에 JWT Bearer 토큰을 포함해야 합니다.
+성공 시 200 OK 응답과 함께 사용자 정보를 반환합니다.
+
+```json
+{
+    "username": "..",
+    "email": "..",
+    "email_verified": "..",
+    "sub": "..."
+}
+```
+
+다음과 같은 에러가 발생할 수 있습니다:
+-   `401 Unauthorized: ERR_GET_USER_NO_AUTH_HEADER`: Authorization 헤더가 없습니다.
+-   `401 Unauthorized: ERR_GET_USER_UNAUTHORIZED`: 인증되지 않은 요청입니다.
