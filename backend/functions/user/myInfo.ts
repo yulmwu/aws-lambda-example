@@ -6,7 +6,7 @@ const cognitoClient = new CognitoIdentityProviderClient({})
 
 export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
     try {
-        const authHeader = event.headers.authorization || event.headers.Authorization
+        const authHeader = event.headers.authorization ?? event.headers.Authorization
         if (!authHeader) return error(unAuthorized(), 'ERR_GET_USER_NO_AUTH_HEADER')
 
         const token = authHeader.split(' ')[1]

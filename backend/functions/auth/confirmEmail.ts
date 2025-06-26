@@ -15,9 +15,7 @@ const cognitoClient = new CognitoIdentityProviderClient({})
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
         const { username, code } = JSON.parse(event.body ?? '{}')
-        if (!username || !code) {
-            return error(badRequest(required('username', 'code')), 'ERR_CONFIRM_EMAIL_BAD_REQUEST')
-        }
+        if (!username || !code) return error(badRequest(required('username', 'code')), 'ERR_CONFIRM_EMAIL_BAD_REQUEST')
 
         const command = new ConfirmSignUpCommand({
             ClientId: process.env.COGNITO_CLIENT_ID!,
