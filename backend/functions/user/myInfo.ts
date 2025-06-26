@@ -6,13 +6,20 @@ const cognitoClient = new CognitoIdentityProviderClient({})
 
 export const handler = async (event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
     try {
-        const authHeader = event.headers.authorization ?? event.headers.Authorization
-        if (!authHeader) return error(unAuthorized(), 'ERR_GET_USER_NO_AUTH_HEADER')
+        const authHeader = event.headers?.Authorization ?? event.headers?.authorization
 
-        const token = authHeader.split(' ')[1]
-        if (!token) return error(unAuthorized(), 'ERR_GET_USER_NO_TOKEN')
+        if (!authHeader || !authHeader.startsWith('Bearer '))
+            return {
+                statusCode: 401,
+                body: JSON.stringify({
+                    error: 'Unauthorized',
+                    message: 'No valid authorization header provided',
+                }),
+            }
 
-        const getUserCommand = new GetUserCommand({ AccessToken: token })
+        const accessToken = authHeader.substring('Bearer '.length)
+
+        const getUserCommand = new GetUserCommand({ AccessToken: accessToken })
         const response = await cognitoClient.send(getUserCommand)
 
         const userAttributes = Object.fromEntries(
