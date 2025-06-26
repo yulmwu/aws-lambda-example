@@ -2,7 +2,7 @@ service: acinside-sl-backend
 
 provider:
     name: aws
-    runtime: nodejs18.x
+    runtime: nodejs22.x
     region: ap-northeast-2
     stage: prod
     memorySize: 128
