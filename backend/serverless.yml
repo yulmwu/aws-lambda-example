@@ -13,7 +13,29 @@ provider:
         AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     httpApi:
         name: acinside-sl-api
-        cors: true
+        cors:
+          allowedOrigins:
+            - https://d4u1g8u41lqnw.cloudfront.net
+          allowedHeaders:
+            - Content-Type
+            - Authorization
+            - X-Requested-With
+            - X-Csrf-Token
+            - Set-Cookie
+          exposedHeaders:
+            - Content-Type
+            - Authorization
+            - Set-Cookie
+          allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - PATCH
+            - HEAD
+            - OPTIONS
+          maxAge: 86400 # 1 day
+          allowCredentials: true
         authorizers:
             cognitoAuthorizer:
                 type: jwt
