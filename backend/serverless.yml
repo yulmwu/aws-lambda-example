@@ -48,26 +48,15 @@ provider:
             statements:
                 - Effect: Allow
                   Action:
-                      - dynamodb:PutItem
-                      - dynamodb:UpdateItem
+                      - dynamodb:PutItem # Create
+                      - dynamodb:GetItem # Read
+                      - dynamodb:Scan # Read(all)
+                      - dynamodb:Query # Read
+                      - dynamodb:UpdateItem # Update
+                      - dynamodb:DeleteItem # Delete
                   Resource:
                       - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
                       - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Counter
-                - Effect: Allow
-                  Action:
-                      - dynamodb:DeleteItem
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
-                - Effect: Allow
-                  Action:
-                      - dynamodb:GetItem
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
-                - Effect: Allow
-                  Action:
-                      - dynamodb:Scan
-                  Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
 
 functions:
     acinsideSL_ConfirmEmail:
@@ -160,7 +149,6 @@ functions:
 
 plugins:
     - serverless-esbuild
-    - serverless-plugin-additional-stacks
     - serverless-prune-plugin
 
 custom:
@@ -176,7 +164,7 @@ custom:
         format: 'cjs'
     prune:
         automatic: true
-        number: 2
+        number: 1
 
 package:
     individually: true

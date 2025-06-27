@@ -32,7 +32,7 @@ jobs:
               run: npm install -g serverless@3.40.0
 
             - name: Install Serverless plugin dependencies
-              run: npm install -g serverless-plugin-additional-stacks serverless-esbuild serverless-prune-plugin
+              run: npm install -g serverless-esbuild serverless-prune-plugin
 
             - name: Install TypeScript
               run: |
