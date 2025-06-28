@@ -147,6 +147,8 @@ resources:
     Resources:
         CognitoUserPool:
             Type: AWS::Cognito::UserPool
+            DeletionPolicy: Retain
+            UpdateReplacePolicy: Retain
             Properties:
                 UserPoolName: acinside-cognito-user-pool
                 AutoVerifiedAttributes:
@@ -166,6 +168,8 @@ resources:
 
         PostsTable:
             Type: AWS::DynamoDB::Table
+            DeletionPolicy: Retain
+            UpdateReplacePolicy: Retain
             Properties:
                 TableName: Posts
                 AttributeDefinitions:
@@ -178,6 +182,8 @@ resources:
 
         CounterTable:
             Type: AWS::DynamoDB::Table
+            DeletionPolicy: Retain
+            UpdateReplacePolicy: Retain
             Properties:
                 TableName: Counter
                 AttributeDefinitions:
