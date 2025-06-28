@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
 
-const API_URL = 'https://c15n5bj638.execute-api.ap-northeast-2.amazonaws.com'
+const API_URL = 'https://43b9hejp5e.execute-api.ap-northeast-2.amazonaws.com'
 
 let accessToken = ''
 
