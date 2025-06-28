@@ -2,46 +2,43 @@ service: acinside-sl-backend
 
 provider:
     name: aws
-    runtime: nodejs22.x
+    runtime: nodejs20.x
     region: ap-northeast-2
     memorySize: 128
     timeout: 10
+    stage: prod
     environment:
-        COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
-        COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+        COGNITO_CLIENT_ID: !Ref CognitoClient
+        COGNITO_USER_POOL_ID: !Ref CognitoUserPool
         AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     httpApi:
         name: acinside-sl-api
         cors:
-          allowedOrigins:
-            - https://d4u1g8u41lqnw.cloudfront.net
-          allowedHeaders:
-            - Content-Type
-            - Authorization
-            - X-Requested-With
-            - X-Csrf-Token
-            - Set-Cookie
-          exposedHeaders:
-            - Content-Type
-            - Authorization
-            - Set-Cookie
-          allowedMethods:
-            - GET
-            - POST
-            - PUT
-            - DELETE
-            - PATCH
-            - HEAD
-            - OPTIONS
-          maxAge: 86400 # 1 day
-          allowCredentials: true
+            allowedOrigins:
+                - https://d4u1g8u41lqnw.cloudfront.net
+            allowedHeaders:
+                - Content-Type
+                - Authorization
+                - X-Requested-With
+                - X-Csrf-Token
+                - Set-Cookie
+            allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - PATCH
+                - HEAD
+                - OPTIONS
+            maxAge: 86400 # 1 day
+            allowCredentials: true
         authorizers:
             cognitoAuthorizer:
                 type: jwt
                 identitySource: '$request.header.Authorization'
-                issuerUrl: https://cognito-idp.${self:provider.region}.amazonaws.com/${self:provider.environment.COGNITO_USER_POOL_ID}
+                issuerUrl: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPool}"
                 audience:
-                    - ${self:provider.environment.COGNITO_CLIENT_ID}
+                    - !Ref CognitoClient
     iam:
         role:
             statements:
@@ -54,8 +51,8 @@ provider:
                       - dynamodb:UpdateItem # Update
                       - dynamodb:DeleteItem # Delete
                   Resource:
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Posts
-                      - arn:aws:dynamodb:${self:provider.region}:${self:provider.environment.AWS_ACCOUNT_ID}:table/Counter
+                      - !GetAtt PostsTable.Arn
+                      - !GetAtt CounterTable.Arn
 
 functions:
     acinsideSL_ConfirmEmail:
@@ -146,6 +143,51 @@ functions:
                   method: get
                   authorizer: cognitoAuthorizer
 
+resources:
+    Resources:
+        CognitoUserPool:
+            Type: AWS::Cognito::UserPool
+            Properties:
+                UserPoolName: acinside-cognito-user-pool
+                AutoVerifiedAttributes:
+                    - email
+                Schema:
+                    - Name: email
+                      Required: true
+
+        CognitoClient:
+            Type: AWS::Cognito::UserPoolClient
+            Properties:
+                ClientName: acinside-cognito-client
+                UserPoolId: !Ref CognitoUserPool
+                GenerateSecret: false
+                ExplicitAuthFlows:
+                    - USER_PASSWORD_AUTH
+
+        PostsTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: Posts
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                BillingMode: PAY_PER_REQUEST
+
+        CounterTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: Counter
+                AttributeDefinitions:
+                    - AttributeName: name
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: name
+                      KeyType: HASH
+                BillingMode: PAY_PER_REQUEST
+
 plugins:
     - serverless-esbuild
     - serverless-prune-plugin
@@ -155,7 +197,7 @@ custom:
         bundle: true
         minify: true
         sourcemap: false
-        target: 'node18'
+        target: 'node20'
         platform: 'node'
         concurrency: 10
         treeShaking: true
