@@ -1,15 +1,15 @@
-name: Deploy S3 static website (React Build)
+name: Deploy AWS Backend (Serverless Framework)
 
 on:
     push:
         branches:
             - main
         paths:
-            - 'frontend/**'
-            - '.github/workflows/aws-deploy-fe.yml'
+            - 'backend/**'
+            - '.github/workflows/aws-deploy-be.yaml'
 
 jobs:
-    build-and-deploy:
+    deploy:
         runs-on: ubuntu-latest
 
         steps:
@@ -23,7 +23,7 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ap-northeast-2
 
-            - name: Setup Node.js
+            - name: Setup NodeJS
               uses: actions/setup-node@v4
               with:
                   node-version: '22'
@@ -32,25 +32,26 @@ jobs:
               run: npm install -g serverless@3.40.0
 
             - name: Install Serverless plugin dependencies
-              run: npm install -g serverless-s3-sync serverless-cloudfront-invalidate
+              run: npm install -g serverless-esbuild serverless-prune-plugin
 
-            - name: Install dependencies
+            - name: Install TypeScript
               run: |
-                  cd frontend
-                  npm install
+                cd backend
+                npm install typescript ts-node @types/node --save-dev
 
-            - name: Build React app
+            - name: Install project dependencies
               run: |
-                  cd frontend
-                  npm run build
+                cd backend
+                npm install
 
-            - name: Upload to S3
+            - name: Build TypeScript files
               run: |
-                  cd frontend
-                  aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+                cd backend
+                tsc
 
-            - name: Invalidate CloudFront cache
+            - name: Deploy with Serverless Framework
               run: |
-                  aws cloudfront create-invalidation \
-                      --distribution-id  ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-                      --paths "/*"
+                cd backend
+                npx serverless deploy --verbose
+              env:
+                  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}

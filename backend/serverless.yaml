@@ -37,8 +37,7 @@ provider:
                 type: jwt
                 identitySource: '$request.header.Authorization'
                 issuerUrl: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPool}"
-                audience:
-                    - !Ref CognitoClient
+                audience: !Ref CognitoClient
     iam:
         role:
             statements:
@@ -162,7 +161,6 @@ resources:
             Properties:
                 ClientName: acinside-cognito-client
                 UserPoolId: !Ref CognitoUserPool
-                GenerateSecret: false
                 ExplicitAuthFlows:
                     - USER_PASSWORD_AUTH
 
