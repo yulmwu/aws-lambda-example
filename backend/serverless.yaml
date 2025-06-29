@@ -15,7 +15,7 @@ provider:
         name: acinside-sl-api
         cors:
             allowedOrigins:
-                - https://d4u1g8u41lqnw.cloudfront.net
+                - https://d1kuxh5767o4hm.cloudfront.net
             allowedHeaders:
                 - Content-Type
                 - Authorization
